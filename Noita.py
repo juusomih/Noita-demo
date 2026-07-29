@@ -10,13 +10,11 @@ clock = pygame.time.Clock()
 class Vesi:
 
     def __init__(self, x,y) -> None:
-        self.color = (0,0,255)
+        self.color = (0,0,250)
         self.x = x
         self.y = y
 
-
     def piirra(self):
-        
         pikselit[self.x,self.y] = self.color
 
     def fysiikka(self):
@@ -27,8 +25,6 @@ class Vesi:
             self.fysiikka()
         self.piirra()
 
-
-vesi = None
 while True:
     
     for tapahtuma in pygame.event.get():
