@@ -1,11 +1,11 @@
 import pygame,numpy
-global pikselit
+global pikselit,bgcolor
 pygame.init()
 naytto = pygame.display.set_mode((640, 480))
 pikselit = pygame.PixelArray(naytto)
 arr = pygame.surfarray.pixels2d(naytto)
 kello = pygame.time.Clock()
-
+bgcolor = 2
 lista = []
 clock = pygame.time.Clock()
 class Vesi:
@@ -14,20 +14,33 @@ class Vesi:
         self.color = (0,0,250)
         self.x = x
         self.y = y
+        self.rest = 0
 
     def piirra(self):
         pikselit[self.x,self.y] = self.color
 
     def fysiikka(self):
-        self.y += 1
+        alapikseli = pikselit[self.x,self.y + 1]
+        vasenpikseli = pikselit[self.x - 1, self.y]
+        oikeapikseli = pikselit[self.x + 1, self.y]
+        if alapikseli == bgcolor:
+            self.y += 1
+        elif vasenpikseli == bgcolor and self.x > 0:
+            self.x -= 1
+        elif oikeapikseli == bgcolor:
+            self.x += 1
+
+
 
     def timestep(self):
         if self.y < 479:
             self.fysiikka()
+            if self.y < 478:
+                print(pikselit[self.x,self.y+1])
         self.piirra()
 
 while True:
-    arr.fill(2)
+    arr.fill(bgcolor)
     for tapahtuma in pygame.event.get():
         if tapahtuma.type == pygame.MOUSEBUTTONDOWN:
             x = tapahtuma.pos[0]
@@ -35,7 +48,7 @@ while True:
             lista.append(Vesi(x,y))
         if tapahtuma.type == pygame.QUIT:
             for x in range(480):
-                print(pikselit[x,240])
+                print(pikselit[x,479])
             exit()
         
         if tapahtuma.type == pygame.KEYDOWN:
@@ -45,7 +58,7 @@ while True:
     for vesi in lista: 
         vesi.timestep()         
     
-    kello.tick(30)
+    kello.tick(60)
     pygame.display.flip()
 
         
