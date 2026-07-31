@@ -47,8 +47,6 @@ while True:
             y = tapahtuma.pos[1]
             lista.append(Vesi(x,y))
         if tapahtuma.type == pygame.QUIT:
-            for x in range(480):
-                print(pikselit[x,479])
             exit()
         
         if tapahtuma.type == pygame.KEYDOWN:
