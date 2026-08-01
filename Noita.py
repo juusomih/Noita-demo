@@ -14,17 +14,26 @@ bgcolor = 0
 
 def hiekka_fysiikka(array):
     for row in range(array.shape[0] - 2, -1, -1):
-        can_move = (array[row] == HIEKKA) & (array[row + 1] == ILMA)
-        array[row][can_move] = ILMA
-        array[row + 1][can_move] = HIEKKA
+
+        can_movedown = (array[row] == HIEKKA) & (array[row + 1] == ILMA)
+        array[row][can_movedown] = ILMA
+        array[row + 1][can_movedown] = HIEKKA
+
+        can_moveleft = (array[row + 1][:-1] == ILMA) & (array[row + 1][1:] != ILMA) & (array[row][1:] == HIEKKA)
+        array[row][:-1][can_moveleft] = ILMA
+        array[row + 1][:-1][can_moveleft] = HIEKKA
+        
+        can_moveright = (array[row + 1][1:] == ILMA) & (array[row + 1][:-1] != ILMA) & (array[row][:-1] == HIEKKA)
+        array[row][1:][can_moveright] = ILMA
+        array[row + 1][1:][can_moveright] = HIEKKA
 
     return array
 
 def vesi_fysiikka(array):
     for row in range(array.shape[0] - 2, -1, -1):
-        can_move = (array[row] == VESI) & (array[row + 1] == ILMA)
-        array[row][can_move] = ILMA
-        array[row + 1][can_move] = VESI
+        can_movedown = (array[row] == VESI) & (array[row + 1] == ILMA)
+        array[row][can_movedown] = ILMA
+        array[row + 1][can_movedown] = VESI
     
     return array
 
@@ -33,7 +42,7 @@ while True:
         
         if tapahtuma.type == pygame.MOUSEBUTTONDOWN:
             x, y = pygame.mouse.get_pos()
-            testi[y,x] = VESI
+            testi[y,x] = HIEKKA
         if tapahtuma.type == pygame.QUIT:
             exit()
         
