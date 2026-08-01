@@ -1,51 +1,31 @@
-import pygame,numpy
-global pikselit,bgcolor
+import numpy, pygame, random
+HEIGHT, WIDTH = 640, 480
+HIEKKA = 100
+VESI = 255
+
+testi = numpy.zeros((HEIGHT, WIDTH))
+
 pygame.init()
-naytto = pygame.display.set_mode((640, 480))
-pikselit = pygame.PixelArray(naytto)
-arr = pygame.surfarray.pixels2d(naytto)
+
+naytto = pygame.display.set_mode((HEIGHT, WIDTH))
 kello = pygame.time.Clock()
-bgcolor = 2
-lista = []
-clock = pygame.time.Clock()
-class Vesi:
+bgcolor = 0
 
-    def __init__(self, x,y) -> None:
-        self.color = (0,0,250)
-        self.x = x
-        self.y = y
-        self.rest = 0
+def hiekkafysiikka(array):
+    for row in range(array.shape[0] - 2, -1, -1):
+            can_move = (array[row] == HIEKKA) & (array[row + 1] == 0)
+            array[row][can_move] = 0
+            array[row + 1][can_move] = HIEKKA
 
-    def piirra(self):
-        pikselit[self.x,self.y] = self.color
+    return array
 
-    def fysiikka(self):
-        alapikseli = pikselit[self.x,self.y + 1]
-        vasenpikseli = pikselit[self.x - 1, self.y]
-        oikeapikseli = pikselit[self.x + 1, self.y]
-        if alapikseli == bgcolor:
-            self.y += 1
-        elif vasenpikseli == bgcolor and self.x > 0:
-            self.x -= 1
-        elif oikeapikseli == bgcolor:
-            self.x += 1
-
-
-
-    def timestep(self):
-        if self.y < 479:
-            self.fysiikka()
-            if self.y < 478:
-                print(pikselit[self.x,self.y+1])
-        self.piirra()
 
 while True:
-    arr.fill(bgcolor)
     for tapahtuma in pygame.event.get():
+        
         if tapahtuma.type == pygame.MOUSEBUTTONDOWN:
-            x = tapahtuma.pos[0]
-            y = tapahtuma.pos[1]
-            lista.append(Vesi(x,y))
+            x, y = pygame.mouse.get_pos()
+            testi[x,y] = HIEKKA
         if tapahtuma.type == pygame.QUIT:
             exit()
         
@@ -53,11 +33,13 @@ while True:
             if tapahtuma.key == pygame.K_ESCAPE:
                 exit()       
         
-    for vesi in lista: 
-        vesi.timestep()         
+    testi = hiekkafysiikka(testi)
+
     
-    kello.tick(60)
+    surface = pygame.surfarray.make_surface(testi)
+    naytto.blit(surface, (0, 0))
     pygame.display.flip()
+
 
         
         
