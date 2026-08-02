@@ -10,7 +10,6 @@ pygame.init()
 
 naytto = pygame.display.set_mode((WIDTH, HEIGHT))
 kello = pygame.time.Clock()
-bgcolor = 0
 
 def hiekka_fysiikka(array):
     for row in range(array.shape[0] - 2, -1, -1):
@@ -20,11 +19,11 @@ def hiekka_fysiikka(array):
         array[row + 1][can_movedown] = HIEKKA
 
         can_moveleft = (array[row + 1][:-1] == ILMA) & (array[row + 1][1:] != ILMA) & (array[row][1:] == HIEKKA)
-        array[row][:-1][can_moveleft] = ILMA
+        array[row][1:][can_moveleft] = ILMA
         array[row + 1][:-1][can_moveleft] = HIEKKA
         
         can_moveright = (array[row + 1][1:] == ILMA) & (array[row + 1][:-1] != ILMA) & (array[row][:-1] == HIEKKA)
-        array[row][1:][can_moveright] = ILMA
+        array[row][:-1][can_moveright] = ILMA
         array[row + 1][1:][can_moveright] = HIEKKA
 
     return array
@@ -49,7 +48,6 @@ while True:
         if tapahtuma.type == pygame.KEYDOWN:
             if tapahtuma.key == pygame.K_ESCAPE:
                 exit()       
-        
     testi = hiekka_fysiikka(testi)
     testi = vesi_fysiikka(testi)
 
