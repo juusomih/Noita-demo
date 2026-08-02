@@ -73,7 +73,7 @@ while True:
     
     surface = pygame.surfarray.make_surface(testi.T)
     naytto.blit(surface, (0, 0))
-    print(kello.get_fps())
+    pygame.display.set_caption(f"{kello.get_fps():.1f}")
     kello.tick(60)
     pygame.display.flip()
 
