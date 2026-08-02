@@ -59,6 +59,9 @@ while True:
 
         if hiekkaa:
             testi[y,x] = HIEKKA
+            testi[y+1,x+1] = HIEKKA
+            testi[y,x+1] = HIEKKA
+            testi[y+1,x] = HIEKKA
         if vetta:
             testi[y,x] = VESI
         if tapahtuma.type == pygame.QUIT:
@@ -74,7 +77,7 @@ while True:
     surface = pygame.surfarray.make_surface(testi.T)
     naytto.blit(surface, (0, 0))
     pygame.display.set_caption(f"{kello.get_fps():.1f}")
-    kello.tick(60)
+    kello.tick(100)
     pygame.display.flip()
 
 
