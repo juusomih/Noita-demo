@@ -1,12 +1,12 @@
 import numpy, pygame, random,cProfile
 WIDTH, HEIGHT = 640, 480
 ILMA = 0
-BRICK = 2
+TIILI = 2
 HIEKKA = 100
 VESI = 255
 
 
-
+tiilta = False
 hiekkaa = False
 vetta = False
 testi = numpy.full((HEIGHT, WIDTH),ILMA)
@@ -64,12 +64,15 @@ while True:
                 hiekkaa = True
             if tapahtuma.key == pygame.K_2:
                 vetta = True
+            if tapahtuma.key == pygame.K_3:
+                tiilta = True
         if tapahtuma.type == pygame.KEYUP:
             if tapahtuma.key == pygame.K_1:
                 hiekkaa = False
             if tapahtuma.key == pygame.K_2:
                 vetta = False
-            
+            if tapahtuma.key == pygame.K_3:
+                tiilta = False
         if tapahtuma.type == pygame.QUIT:
             exit()
         
@@ -82,7 +85,8 @@ while True:
         testi[y,x] = HIEKKA
     if vetta:
         testi[y,x] = VESI
-    
+    if tiilta:
+        testi[y,x] = TIILI
     surface = pygame.surfarray.make_surface(testi.T)
     naytto.blit(surface, (0, 0))
     pygame.display.set_caption(f"{kello.get_fps():.1f}")
