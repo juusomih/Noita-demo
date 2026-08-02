@@ -25,6 +25,9 @@ def check_diagonal_left(array,row, blokki):
     mask = (array[row + 1][:-1] == ILMA) & (array[row + 1][1:] == blokki) & (array[row][1:] == blokki)
     return mask
 
+def check_diagonal_right(array,row, blokki):
+    mask = (array[row + 1][1:] == ILMA) & (array[row + 1][:-1] != ILMA) & (array[row][:-1] == blokki)
+    return mask
 
 def hiekka_fysiikka(array):
     for row in range(array.shape[0] - 2, -1, -1):
@@ -37,7 +40,7 @@ def hiekka_fysiikka(array):
         array[row][1:][can_moveleft] = ILMA
         array[row + 1][:-1][can_moveleft] = HIEKKA
         
-        can_moveright = (array[row + 1][1:] == ILMA) & (array[row + 1][:-1] != ILMA) & (array[row][:-1] == HIEKKA)
+        can_moveright = check_diagonal_right(array,row, HIEKKA)
         array[row][:-1][can_moveright] = ILMA
         array[row + 1][1:][can_moveright] = HIEKKA
 
@@ -67,11 +70,6 @@ while True:
             if tapahtuma.key == pygame.K_2:
                 vetta = False
             
-
-        if hiekkaa:
-            testi[y,x] = HIEKKA
-        if vetta:
-            testi[y,x] = VESI
         if tapahtuma.type == pygame.QUIT:
             exit()
         
@@ -80,7 +78,10 @@ while True:
                 exit()       
     testi = hiekka_fysiikka(testi)
     testi = vesi_fysiikka(testi)
-
+    if hiekkaa:
+        testi[y,x] = HIEKKA
+    if vetta:
+        testi[y,x] = VESI
     
     surface = pygame.surfarray.make_surface(testi.T)
     naytto.blit(surface, (0, 0))
