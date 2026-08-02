@@ -6,7 +6,7 @@ VESI = 255
 hiekkaa = False
 vetta = False
 testi = numpy.full((HEIGHT, WIDTH),ILMA)
-
+kello = pygame.time.Clock()
 pygame.init()
 
 naytto = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -73,6 +73,8 @@ while True:
     
     surface = pygame.surfarray.make_surface(testi.T)
     naytto.blit(surface, (0, 0))
+    print(kello.get_fps())
+    kello.tick(60)
     pygame.display.flip()
 
 
