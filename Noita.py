@@ -1,9 +1,9 @@
 import numpy, pygame, random,cProfile
 WIDTH, HEIGHT = 640, 480
 ILMA = 0
-TIILI = 2
-HIEKKA = 100
-VESI = 255
+TIILI = 90
+HIEKKA = 249
+VESI = 2
 
 
 tiilta = False
@@ -121,7 +121,7 @@ while True:
     surface = pygame.surfarray.make_surface(testi.T)
     naytto.blit(surface, (0, 0))
     pygame.display.set_caption(f"{kello.get_fps():.1f}")
-    kello.tick(0)
+    kello.tick(60)
     pygame.display.flip()
 
 
