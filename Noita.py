@@ -29,6 +29,14 @@ def check_diagonal_right(array,row, blokki):
     mask = (array[row + 1][1:] == ILMA) & (array[row + 1][:-1] != ILMA) & (array[row][:-1] == blokki)
     return mask
 
+def check_left(array,row,blokki):
+    mask = (array[row][1:] == blokki) & (array[row][:-1] == ILMA)
+    return mask
+
+def check_right(array,row,blokki):
+    mask = (array[row][:-1] == blokki) & (array[row][1:] == ILMA)
+    return mask
+
 def hiekka_fysiikka(array):
     for row in range(array.shape[0] - 2, -1, -1):
         
@@ -48,10 +56,26 @@ def hiekka_fysiikka(array):
 
 def vesi_fysiikka(array):
     for row in range(array.shape[0] - 2, -1, -1):
-        can_movedown = (array[row] == VESI) & (array[row + 1] == ILMA)
+        can_movedown = check_down(array,row,VESI)
         array[row][can_movedown] = ILMA
         array[row + 1][can_movedown] = VESI
-    
+
+        can_moveleft = check_diagonal_left(array,row, VESI)
+        array[row][1:][can_moveleft] = ILMA
+        array[row + 1][:-1][can_moveleft] = VESI
+        
+        can_moveright = check_diagonal_right(array,row, VESI)
+        array[row][:-1][can_moveright] = ILMA
+        array[row + 1][1:][can_moveright] = VESI
+
+        # can_moveleft = check_left(array, row, VESI)
+        # array[row][1:][can_moveleft] = ILMA
+        # array[row][:-1][can_moveleft] = VESI
+
+        can_moveright = check_right(array, row, VESI)
+        array[row][:-1][can_moveright] = ILMA
+        array[row][1:][can_moveright] = VESI
+
     return array
 cProfile.run("hiekka_fysiikka(testi)")
 while True:
@@ -79,18 +103,21 @@ while True:
         if tapahtuma.type == pygame.KEYDOWN:
             if tapahtuma.key == pygame.K_ESCAPE:
                 exit()       
+
     testi = hiekka_fysiikka(testi)
     testi = vesi_fysiikka(testi)
+
     if hiekkaa:
         testi[y,x] = HIEKKA
     if vetta:
         testi[y,x] = VESI
     if tiilta:
         testi[y,x] = TIILI
+
     surface = pygame.surfarray.make_surface(testi.T)
     naytto.blit(surface, (0, 0))
     pygame.display.set_caption(f"{kello.get_fps():.1f}")
-    kello.tick(100)
+    kello.tick(60)
     pygame.display.flip()
 
 
