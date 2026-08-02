@@ -1,7 +1,8 @@
 import numpy, pygame, random,cProfile
+
 WIDTH, HEIGHT = 640, 480
 ILMA = 0
-TIILI = 90
+TIILI = 100
 HIEKKA = 249
 VESI = 2
 
@@ -26,7 +27,7 @@ def check_diagonal_left(array,row, blokki):
     return mask
 
 def check_diagonal_right(array,row, blokki):
-    mask = (array[row + 1][1:] == ILMA) & (array[row + 1][:-1] != ILMA) & (array[row][:-1] == blokki)
+    mask = (array[row + 1][1:] == ILMA) & (array[row + 1][:-1] == blokki) & (array[row][:-1] == blokki)
     return mask
 
 def check_left(array,row,blokki):
@@ -72,18 +73,31 @@ def vesi_fysiikka(array):
         current_row[:-1][can_move_diagonal_right] = ILMA
         below_row[1:][can_move_diagonal_right] = VESI
 
-        # can_moveleft = check_left(array, row, VESI)
-        # current_row[1:][can_moveleft] = ILMA
-        # current_row[:-1][can_moveleft] = VESI
-
+        can_moveleft = check_left(array, row, VESI)
         can_moveright = check_right(array, row, VESI)
-        current_row[:-1][can_moveright] = ILMA
-        current_row[1:][can_moveright] = VESI
 
-    return array
-cProfile.run("vesi_fysiikka(testi)")
-while True:
+        if random.random() < 0.5:
+            left_mask = can_moveleft
+            right_mask = can_moveright & ~can_moveleft
+        else:
+            right_mask = can_moveright
+            left_mask = can_moveleft & ~can_moveright
+
+        current_row[1:][left_mask] = ILMA
+        current_row[:-1][left_mask] = VESI
+
+        
+        current_row[:-1][right_mask] = ILMA
+        current_row[1:][right_mask] = VESI
+
+        
     
+    return array
+#cProfile.run("vesi_fysiikka(testi)")
+while True:
+    hiekkalkm = numpy.count_nonzero(testi == HIEKKA)
+    vesilkm = numpy.count_nonzero(testi == VESI)
+    print(f"hiekka: {hiekkalkm} vesi: {vesilkm}")
     x, y = pygame.mouse.get_pos()
     for tapahtuma in pygame.event.get():
         
@@ -117,6 +131,7 @@ while True:
         testi[y,x] = VESI
     if tiilta:
         testi[y,x] = TIILI
+        testi[y+1,x] = TIILI
 
     surface = pygame.surfarray.make_surface(testi.T)
     naytto.blit(surface, (0, 0))
