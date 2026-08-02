@@ -3,7 +3,8 @@ WIDTH, HEIGHT = 640, 480
 ILMA = 0
 HIEKKA = 100
 VESI = 255
-
+hiekkaa = False
+vetta = False
 testi = numpy.full((HEIGHT, WIDTH),ILMA)
 
 pygame.init()
@@ -37,11 +38,29 @@ def vesi_fysiikka(array):
     return array
 
 while True:
+    
+    x, y = pygame.mouse.get_pos()
     for tapahtuma in pygame.event.get():
         
-        if tapahtuma.type == pygame.MOUSEBUTTONDOWN:
-            x, y = pygame.mouse.get_pos()
+        if tapahtuma.type == pygame.KEYDOWN:
+            if tapahtuma.key == pygame.K_1:
+                hiekkaa = True
+        if tapahtuma.type == pygame.KEYUP:
+            if tapahtuma.key == pygame.K_1:
+                hiekkaa = False
+
+        if tapahtuma.type == pygame.KEYDOWN:
+            if tapahtuma.key == pygame.K_2:
+                vetta = True
+        if tapahtuma.type == pygame.KEYUP:
+            if tapahtuma.key == pygame.K_2:
+                vetta = False
+            
+
+        if hiekkaa:
             testi[y,x] = HIEKKA
+        if vetta:
+            testi[y,x] = VESI
         if tapahtuma.type == pygame.QUIT:
             exit()
         
