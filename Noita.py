@@ -39,45 +39,49 @@ def check_right(array,row,blokki):
 
 def hiekka_fysiikka(array):
     for row in range(array.shape[0] - 2, -1, -1):
-        
+        current_row = array[row]
+        below_row = array[row + 1]
         can_movedown = check_down(array,row,HIEKKA)
-        array[row][can_movedown] = ILMA
-        array[row + 1][can_movedown] = HIEKKA
+        current_row[can_movedown] = ILMA
+        below_row[can_movedown] = HIEKKA
 
         can_moveleft = check_diagonal_left(array,row, HIEKKA)
-        array[row][1:][can_moveleft] = ILMA
-        array[row + 1][:-1][can_moveleft] = HIEKKA
+        current_row[1:][can_moveleft] = ILMA
+        below_row[:-1][can_moveleft] = HIEKKA
         
         can_moveright = check_diagonal_right(array,row, HIEKKA)
-        array[row][:-1][can_moveright] = ILMA
-        array[row + 1][1:][can_moveright] = HIEKKA
+        current_row[:-1][can_moveright] = ILMA
+        below_row[1:][can_moveright] = HIEKKA
 
     return array
 
 def vesi_fysiikka(array):
     for row in range(array.shape[0] - 2, -1, -1):
-        can_movedown = check_down(array,row,VESI)
-        array[row][can_movedown] = ILMA
-        array[row + 1][can_movedown] = VESI
+        current_row = array[row]
+        below_row = array[row + 1]
 
-        can_moveleft = check_diagonal_left(array,row, VESI)
-        array[row][1:][can_moveleft] = ILMA
-        array[row + 1][:-1][can_moveleft] = VESI
+        can_movedown = check_down(array,row,VESI)
+        current_row[can_movedown] = ILMA
+        below_row[can_movedown] = VESI
+
+        can_move_diagonal_left = check_diagonal_left(array,row, VESI)
+        current_row[1:][can_move_diagonal_left] = ILMA
+        below_row[:-1][can_move_diagonal_left] = VESI
         
-        can_moveright = check_diagonal_right(array,row, VESI)
-        array[row][:-1][can_moveright] = ILMA
-        array[row + 1][1:][can_moveright] = VESI
+        can_move_diagonal_right = check_diagonal_right(array,row, VESI)
+        current_row[:-1][can_move_diagonal_right] = ILMA
+        below_row[1:][can_move_diagonal_right] = VESI
 
         # can_moveleft = check_left(array, row, VESI)
-        # array[row][1:][can_moveleft] = ILMA
-        # array[row][:-1][can_moveleft] = VESI
+        # current_row[1:][can_moveleft] = ILMA
+        # current_row[:-1][can_moveleft] = VESI
 
         can_moveright = check_right(array, row, VESI)
-        array[row][:-1][can_moveright] = ILMA
-        array[row][1:][can_moveright] = VESI
+        current_row[:-1][can_moveright] = ILMA
+        current_row[1:][can_moveright] = VESI
 
     return array
-cProfile.run("hiekka_fysiikka(testi)")
+cProfile.run("vesi_fysiikka(testi)")
 while True:
     
     x, y = pygame.mouse.get_pos()
@@ -117,7 +121,7 @@ while True:
     surface = pygame.surfarray.make_surface(testi.T)
     naytto.blit(surface, (0, 0))
     pygame.display.set_caption(f"{kello.get_fps():.1f}")
-    kello.tick(60)
+    kello.tick(0)
     pygame.display.flip()
 
 
