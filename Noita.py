@@ -1,8 +1,12 @@
-import numpy, pygame, random
+import numpy, pygame, random,cProfile
 WIDTH, HEIGHT = 640, 480
 ILMA = 0
+BRICK = 2
 HIEKKA = 100
 VESI = 255
+
+
+
 hiekkaa = False
 vetta = False
 testi = numpy.full((HEIGHT, WIDTH),ILMA)
@@ -12,14 +16,24 @@ pygame.init()
 naytto = pygame.display.set_mode((WIDTH, HEIGHT))
 kello = pygame.time.Clock()
 
+
+def check_down(array,row,blokki):
+    mask = (array[row] == blokki) & (array[row + 1] == ILMA)
+    return mask
+
+def check_diagonal_left(array,row, blokki):
+    mask = (array[row + 1][:-1] == ILMA) & (array[row + 1][1:] == blokki) & (array[row][1:] == blokki)
+    return mask
+
+
 def hiekka_fysiikka(array):
     for row in range(array.shape[0] - 2, -1, -1):
-
-        can_movedown = (array[row] == HIEKKA) & (array[row + 1] == ILMA)
+        
+        can_movedown = check_down(array,row,HIEKKA)
         array[row][can_movedown] = ILMA
         array[row + 1][can_movedown] = HIEKKA
 
-        can_moveleft = (array[row + 1][:-1] == ILMA) & (array[row + 1][1:] != ILMA) & (array[row][1:] == HIEKKA)
+        can_moveleft = check_diagonal_left(array,row, HIEKKA)
         array[row][1:][can_moveleft] = ILMA
         array[row + 1][:-1][can_moveleft] = HIEKKA
         
@@ -36,7 +50,7 @@ def vesi_fysiikka(array):
         array[row + 1][can_movedown] = VESI
     
     return array
-
+cProfile.run("hiekka_fysiikka(testi)")
 while True:
     
     x, y = pygame.mouse.get_pos()
@@ -45,23 +59,17 @@ while True:
         if tapahtuma.type == pygame.KEYDOWN:
             if tapahtuma.key == pygame.K_1:
                 hiekkaa = True
-        if tapahtuma.type == pygame.KEYUP:
-            if tapahtuma.key == pygame.K_1:
-                hiekkaa = False
-
-        if tapahtuma.type == pygame.KEYDOWN:
             if tapahtuma.key == pygame.K_2:
                 vetta = True
         if tapahtuma.type == pygame.KEYUP:
+            if tapahtuma.key == pygame.K_1:
+                hiekkaa = False
             if tapahtuma.key == pygame.K_2:
                 vetta = False
             
 
         if hiekkaa:
             testi[y,x] = HIEKKA
-            testi[y+1,x+1] = HIEKKA
-            testi[y,x+1] = HIEKKA
-            testi[y+1,x] = HIEKKA
         if vetta:
             testi[y,x] = VESI
         if tapahtuma.type == pygame.QUIT:
