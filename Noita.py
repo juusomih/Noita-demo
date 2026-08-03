@@ -17,6 +17,10 @@ pygame.init()
 naytto = pygame.display.set_mode((WIDTH, HEIGHT))
 kello = pygame.time.Clock()
 
+def print_partikkeli_lkm():
+    hiekkalkm = numpy.count_nonzero(testi == HIEKKA)
+    vesilkm = numpy.count_nonzero(testi == VESI)
+    print(f"hiekka: {hiekkalkm} vesi: {vesilkm}")
 
 def check_down(array,row,blokki):
     mask = (array[row] == blokki) & (array[row + 1] == ILMA)
@@ -92,9 +96,7 @@ def vesi_fysiikka(array):
     return array
 cProfile.run("vesi_fysiikka(testi)")
 while True:
-    hiekkalkm = numpy.count_nonzero(testi == HIEKKA)
-    vesilkm = numpy.count_nonzero(testi == VESI)
-    print(f"hiekka: {hiekkalkm} vesi: {vesilkm}")
+    #print_partikkeli_lkm()
     x, y = pygame.mouse.get_pos()
     for tapahtuma in pygame.event.get():
         
