@@ -75,25 +75,22 @@ def vesi_fysiikka(array):
 
         can_moveleft = check_left(array, row, VESI)
         can_moveright = check_right(array, row, VESI)
-
-        if random.random() < 0.5:
+        
+        if random.random() < 0.3:
             left_mask = can_moveleft
             right_mask = can_moveright & ~can_moveleft
+
+            current_row[1:][left_mask] = ILMA
+            current_row[:-1][left_mask] = VESI
         else:
             right_mask = can_moveright
             left_mask = can_moveleft & ~can_moveright
 
-        current_row[1:][left_mask] = ILMA
-        current_row[:-1][left_mask] = VESI
+            current_row[:-1][right_mask] = ILMA
+            current_row[1:][right_mask] = VESI
 
-        
-        current_row[:-1][right_mask] = ILMA
-        current_row[1:][right_mask] = VESI
-
-        
-    
     return array
-#cProfile.run("vesi_fysiikka(testi)")
+cProfile.run("vesi_fysiikka(testi)")
 while True:
     hiekkalkm = numpy.count_nonzero(testi == HIEKKA)
     vesilkm = numpy.count_nonzero(testi == VESI)
@@ -131,8 +128,7 @@ while True:
         testi[y,x] = VESI
     if tiilta:
         testi[y,x] = TIILI
-        testi[y+1,x] = TIILI
-
+        
     surface = pygame.surfarray.make_surface(testi.T)
     naytto.blit(surface, (0, 0))
     pygame.display.set_caption(f"{kello.get_fps():.1f}")
