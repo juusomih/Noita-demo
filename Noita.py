@@ -17,6 +17,12 @@ pygame.init()
 naytto = pygame.display.set_mode((WIDTH, HEIGHT))
 kello = pygame.time.Clock()
 
+def spawn_particle(array, particle,y:int = 1,x:int = 1):
+    pass
+
+def explosion():
+    pass
+
 def print_partikkeli_lkm():
     hiekkalkm = numpy.count_nonzero(testi == HIEKKA)
     vesilkm = numpy.count_nonzero(testi == VESI)
@@ -26,13 +32,19 @@ def check_down(array,row,blokki):
     mask = (array[row] == blokki) & (array[row + 1] == ILMA)
     return mask
 
-def check_diagonal_left(array,row, blokki):
+def check_diagonal_down_left(array,row, blokki):
     mask = (array[row + 1][:-1] == ILMA) & (array[row + 1][1:] == blokki) & (array[row][1:] == blokki)
     return mask
 
-def check_diagonal_right(array,row, blokki):
+def check_diagonal_down_right(array,row, blokki):
     mask = (array[row + 1][1:] == ILMA) & (array[row + 1][:-1] == blokki) & (array[row][:-1] == blokki)
     return mask
+
+def check_diagonal_up_left(array,row,blokki):
+	pass
+
+def check_diagonal_up_right(array, row, blokki):
+    pass
 
 def check_left(array,row,blokki):
     mask = (array[row][1:] == blokki) & (array[row][:-1] == ILMA)
@@ -42,6 +54,9 @@ def check_right(array,row,blokki):
     mask = (array[row][:-1] == blokki) & (array[row][1:] == ILMA)
     return mask
 
+def savu_fysiikka(array):
+    pass
+
 def hiekka_fysiikka(array):
     for row in range(array.shape[0] - 2, -1, -1):
         current_row = array[row]
@@ -50,11 +65,11 @@ def hiekka_fysiikka(array):
         current_row[can_movedown] = ILMA
         below_row[can_movedown] = HIEKKA
 
-        can_moveleft = check_diagonal_left(array,row, HIEKKA)
+        can_moveleft = check_diagonal_down_left(array,row, HIEKKA)
         current_row[1:][can_moveleft] = ILMA
         below_row[:-1][can_moveleft] = HIEKKA
         
-        can_moveright = check_diagonal_right(array,row, HIEKKA)
+        can_moveright = check_diagonal_down_right(array,row, HIEKKA)
         current_row[:-1][can_moveright] = ILMA
         below_row[1:][can_moveright] = HIEKKA
 
@@ -69,11 +84,11 @@ def vesi_fysiikka(array):
         current_row[can_movedown] = ILMA
         below_row[can_movedown] = VESI
 
-        can_move_diagonal_left = check_diagonal_left(array,row, VESI)
+        can_move_diagonal_left = check_diagonal_down_left(array,row, VESI)
         current_row[1:][can_move_diagonal_left] = ILMA
         below_row[:-1][can_move_diagonal_left] = VESI
         
-        can_move_diagonal_right = check_diagonal_right(array,row, VESI)
+        can_move_diagonal_right = check_diagonal_down_right(array,row, VESI)
         current_row[:-1][can_move_diagonal_right] = ILMA
         below_row[1:][can_move_diagonal_right] = VESI
 
@@ -94,6 +109,7 @@ def vesi_fysiikka(array):
             current_row[1:][right_mask] = VESI
 
     return array
+
 cProfile.run("vesi_fysiikka(testi)")
 while True:
     #print_partikkeli_lkm()
@@ -128,6 +144,9 @@ while True:
         testi[y,x] = HIEKKA
     if vetta:
         testi[y,x] = VESI
+        testi[y,x+1] = VESI
+        testi[y,x+2] = VESI
+        testi[y,x+3] = VESI
     if tiilta:
         testi[y,x] = TIILI
         
