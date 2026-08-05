@@ -17,9 +17,36 @@ pygame.init()
 naytto = pygame.display.set_mode((WIDTH, HEIGHT))
 kello = pygame.time.Clock()
 
+def move_particle(current_row,below_row, mask, destination:str):
+    if destination == "down":
+        current_row[mask] = ILMA
+        below_row[mask] = VESI
+
+    elif destination == "down_left":
+        pass
+
+    elif destination == "down_right":
+        pass
+
+    elif destination == "left":
+        pass
+
+    elif destination == "right":
+        pass
+
+    elif destination == "up_left":
+        pass
+
+    elif destination == "up_right":
+        pass
+
+    elif destination == "up":
+        pass
+    
+
 def spawn_particle(array, particle,y:int = 1,x:int = 1):
     pass
-
+	
 def explosion():
     pass
 
@@ -80,9 +107,7 @@ def vesi_fysiikka(array):
         current_row = array[row]
         below_row = array[row + 1]
 
-        can_movedown = check_down(array,row,VESI)
-        current_row[can_movedown] = ILMA
-        below_row[can_movedown] = VESI
+        move_particle(current_row,below_row, check_down(array,row,VESI), "down")
 
         can_move_diagonal_left = check_diagonal_down_left(array,row, VESI)
         current_row[1:][can_move_diagonal_left] = ILMA
@@ -123,6 +148,8 @@ while True:
                 vetta = True
             if tapahtuma.key == pygame.K_3:
                 tiilta = True
+            if tapahtuma.key == pygame.K_ESCAPE:
+                exit()
         if tapahtuma.type == pygame.KEYUP:
             if tapahtuma.key == pygame.K_1:
                 hiekkaa = False
@@ -133,9 +160,7 @@ while True:
         if tapahtuma.type == pygame.QUIT:
             exit()
         
-        if tapahtuma.type == pygame.KEYDOWN:
-            if tapahtuma.key == pygame.K_ESCAPE:
-                exit()       
+             
 
     testi = hiekka_fysiikka(testi)
     testi = vesi_fysiikka(testi)
