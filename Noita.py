@@ -1,4 +1,4 @@
-import numpy, pygame, random,cProfile
+import numpy, pygame, random,cProfile,time
 
 WIDTH, HEIGHT = 640, 480
 ILMA = 0
@@ -175,8 +175,9 @@ def fysiikka(array):
 
     return array
 
-cProfile.run("fysiikka(testi)")
 while True:
+    start = time.perf_counter()
+    
     #print_partikkeli_lkm()
     x, y = pygame.mouse.get_pos()
     for tapahtuma in pygame.event.get():
@@ -205,10 +206,11 @@ while True:
     if hiekkaa:
         testi[y,x] = HIEKKA
     if vetta:
-        testi[y,x] = VESI
-        testi[y,x+1] = VESI
-        testi[y,x+2] = VESI
-        testi[y,x+3] = VESI
+        if x+3 < WIDTH:
+            testi[y,x] = VESI
+            testi[y,x+1] = VESI
+            testi[y,x+2] = VESI
+            testi[y,x+3] = VESI
     if tiilta:
         testi[y,x] = TIILI
         
@@ -217,7 +219,8 @@ while True:
     pygame.display.set_caption(f"{kello.get_fps():.1f}")
     kello.tick(60)
     pygame.display.flip()
-
+    end = time.perf_counter()
+    print(f"Time per loop = {end - start:.5f}")
 
         
         
