@@ -104,7 +104,7 @@ def hiekka_fysiikka(array):
 
     return array
 
-def vesi_fysiikka(array):
+def fysiikka(array):
     for row in range(array.shape[0] - 2, -1, -1):
         current_row = array[row]
         below_row = array[row + 1]
@@ -157,7 +157,6 @@ def vesi_fysiikka(array):
             check_diagonal_down_right(array, row, HIEKKA),
         )
 
-
         can_moveleft = check_left(array, row, VESI)
         can_moveright = check_right(array, row, VESI)
         
@@ -176,7 +175,7 @@ def vesi_fysiikka(array):
 
     return array
 
-cProfile.run("vesi_fysiikka(testi)")
+cProfile.run("fysiikka(testi)")
 while True:
     #print_partikkeli_lkm()
     x, y = pygame.mouse.get_pos()
@@ -201,10 +200,7 @@ while True:
         if tapahtuma.type == pygame.QUIT:
             exit()
         
-             
-
-    #testi = hiekka_fysiikka(testi)
-    testi = vesi_fysiikka(testi)
+    testi = fysiikka(testi)
 
     if hiekkaa:
         testi[y,x] = HIEKKA
