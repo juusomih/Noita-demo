@@ -205,12 +205,11 @@ while True:
 
     if hiekkaa:
         testi[y,x] = HIEKKA
-    if vetta:
-        if x+3 < WIDTH:
-            testi[y,x] = VESI
-            testi[y,x+1] = VESI
-            testi[y,x+2] = VESI
-            testi[y,x+3] = VESI
+    if vetta and x+3 < WIDTH:
+        testi[y,x] = VESI
+        testi[y,x+1] = VESI
+        testi[y,x+2] = VESI
+        testi[y,x+3] = VESI
     if tiilta:
         testi[y,x] = TIILI
         
