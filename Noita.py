@@ -215,11 +215,12 @@ while True:
         
     surface = pygame.surfarray.make_surface(testi.T)
     naytto.blit(surface, (0, 0))
-    pygame.display.set_caption(f"{kello.get_fps():.1f}")
+    
     kello.tick(60)
     pygame.display.flip()
     end = time.perf_counter()
-    print(f"Time per loop = {end - start:.5f}")
+    pygame.display.set_caption(f"{kello.get_fps():.1f} fps -- {end - start:.5f} ms")
+    
 
         
         
