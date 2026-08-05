@@ -17,16 +17,18 @@ pygame.init()
 naytto = pygame.display.set_mode((WIDTH, HEIGHT))
 kello = pygame.time.Clock()
 
-def move_particle(current_row,below_row, mask, destination:str):
+def move_particle(particle, destination: str, current_row, below_row, mask):
     if destination == "down":
         current_row[mask] = ILMA
-        below_row[mask] = VESI
+        below_row[mask] = particle
 
     elif destination == "down_left":
-        pass
+        current_row[1:][mask] = ILMA
+        below_row[:-1][mask] = particle
 
     elif destination == "down_right":
-        pass
+        current_row[:-1][mask] = ILMA
+        below_row[1:][mask] = particle
 
     elif destination == "left":
         pass
@@ -107,15 +109,54 @@ def vesi_fysiikka(array):
         current_row = array[row]
         below_row = array[row + 1]
 
-        move_particle(current_row,below_row, check_down(array,row,VESI), "down")
+        move_particle(
+            VESI,
+            "down", 
+            current_row, 
+            below_row, 
+            check_down(array, row, VESI)
+        )
 
-        can_move_diagonal_left = check_diagonal_down_left(array,row, VESI)
-        current_row[1:][can_move_diagonal_left] = ILMA
-        below_row[:-1][can_move_diagonal_left] = VESI
-        
-        can_move_diagonal_right = check_diagonal_down_right(array,row, VESI)
-        current_row[:-1][can_move_diagonal_right] = ILMA
-        below_row[1:][can_move_diagonal_right] = VESI
+        move_particle(
+            VESI,
+            "down_left",
+            current_row,
+            below_row,
+            check_diagonal_down_left(array, row, VESI),
+        )
+
+        move_particle(
+            VESI,
+            "down_right",
+            current_row,
+            below_row,
+            check_diagonal_down_right(array, row, VESI),
+        )
+
+        move_particle(
+            HIEKKA,
+            "down", 
+            current_row, 
+            below_row, 
+            check_down(array, row, HIEKKA)
+        )
+
+        move_particle(
+            HIEKKA,
+            "down_left",
+            current_row,
+            below_row,
+            check_diagonal_down_left(array, row, HIEKKA),
+        )
+
+        move_particle(
+            HIEKKA,
+            "down_right",
+            current_row,
+            below_row,
+            check_diagonal_down_right(array, row, HIEKKA),
+        )
+
 
         can_moveleft = check_left(array, row, VESI)
         can_moveright = check_right(array, row, VESI)
@@ -162,7 +203,7 @@ while True:
         
              
 
-    testi = hiekka_fysiikka(testi)
+    #testi = hiekka_fysiikka(testi)
     testi = vesi_fysiikka(testi)
 
     if hiekkaa:
