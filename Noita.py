@@ -1,16 +1,18 @@
-import numpy, pygame, random,cProfile,time
+import numpy as np, pygame, random,cProfile,time
 
 WIDTH, HEIGHT = 640, 480
 ILMA = 0
 TIILI = 100
 HIEKKA = 249
+SAVU = 50
 VESI = 2
 
 
 tiilta = False
 hiekkaa = False
 vetta = False
-testi = numpy.full((HEIGHT, WIDTH),ILMA)
+savua = False
+testi = np.full((HEIGHT, WIDTH),ILMA,device="cpu")
 kello = pygame.time.Clock()
 pygame.init()
 
@@ -36,14 +38,17 @@ def move_particle(particle, destination: str, current_row, below_row, mask):
     elif destination == "right":
         pass
 
+    elif destination == "up":
+        current_row[mask] = particle
+        below_row[mask] = ILMA
+
     elif destination == "up_left":
         pass
 
     elif destination == "up_right":
         pass
 
-    elif destination == "up":
-        pass
+    
     
 
 def spawn_particle(array, particle,y:int = 1,x:int = 1):
@@ -53,8 +58,8 @@ def explosion():
     pass
 
 def print_partikkeli_lkm():
-    hiekkalkm = numpy.count_nonzero(testi == HIEKKA)
-    vesilkm = numpy.count_nonzero(testi == VESI)
+    hiekkalkm = np.count_nonzero(testi == HIEKKA)
+    vesilkm = np.count_nonzero(testi == VESI)
     print(f"hiekka: {hiekkalkm} vesi: {vesilkm}")
 
 def check_down(array,row,blokki):
@@ -67,6 +72,10 @@ def check_diagonal_down_left(array,row, blokki):
 
 def check_diagonal_down_right(array,row, blokki):
     mask = (array[row + 1][1:] == ILMA) & (array[row + 1][:-1] == blokki) & (array[row][:-1] == blokki)
+    return mask
+
+def check_up(array,row,blokki):
+    mask = (array[row] == blokki) & (array[row-1] == ILMA)
     return mask
 
 def check_diagonal_up_left(array,row,blokki):
@@ -83,28 +92,22 @@ def check_right(array,row,blokki):
     mask = (array[row][:-1] == blokki) & (array[row][1:] == ILMA)
     return mask
 
-def savu_fysiikka(array):
-    pass
+def uusi_fysiikka(array):
+    find_below = (array[1:, :] == ILMA ) & (array[:-1, :] == HIEKKA)
+    array[1:, :][find_below] = HIEKKA
+    array[:-1, :][find_below] = ILMA
 
-def hiekka_fysiikka(array):
-    for row in range(array.shape[0] - 2, -1, -1):
-        current_row = array[row]
-        below_row = array[row + 1]
-        can_movedown = check_down(array,row,HIEKKA)
-        current_row[can_movedown] = ILMA
-        below_row[can_movedown] = HIEKKA
+    find_diag_down_left = (array[1:,:-1] == ILMA) & (array[:-1,1:] == HIEKKA)
+    array[1:,:-1][find_diag_down_left] = HIEKKA
+    array[:-1,1:][find_diag_down_left] = ILMA
 
-        can_moveleft = check_diagonal_down_left(array,row, HIEKKA)
-        current_row[1:][can_moveleft] = ILMA
-        below_row[:-1][can_moveleft] = HIEKKA
-        
-        can_moveright = check_diagonal_down_right(array,row, HIEKKA)
-        current_row[:-1][can_moveright] = ILMA
-        below_row[1:][can_moveright] = HIEKKA
+    find_diag_down_right = (array[1:,1:] == ILMA) & (array[:-1,:-1] == HIEKKA)
+    array[1:,1:][find_diag_down_right] = HIEKKA
+    array[:-1,:-1][find_diag_down_right] = ILMA
 
     return array
 
-def fysiikka(array):
+def vanha_fysiikka(array):
     for row in range(array.shape[0] - 2, -1, -1):
         current_row = array[row]
         below_row = array[row + 1]
@@ -133,30 +136,6 @@ def fysiikka(array):
             check_diagonal_down_right(array, row, VESI),
         )
 
-        move_particle(
-            HIEKKA,
-            "down", 
-            current_row, 
-            below_row, 
-            check_down(array, row, HIEKKA)
-        )
-
-        move_particle(
-            HIEKKA,
-            "down_left",
-            current_row,
-            below_row,
-            check_diagonal_down_left(array, row, HIEKKA),
-        )
-
-        move_particle(
-            HIEKKA,
-            "down_right",
-            current_row,
-            below_row,
-            check_diagonal_down_right(array, row, HIEKKA),
-        )
-
         can_moveleft = check_left(array, row, VESI)
         can_moveright = check_right(array, row, VESI)
         
@@ -175,10 +154,11 @@ def fysiikka(array):
 
     return array
 
+#cProfile.run("fysiikka(testi)")
 while True:
     start = time.perf_counter()
     
-    #print_partikkeli_lkm()
+    print_partikkeli_lkm()
     x, y = pygame.mouse.get_pos()
     for tapahtuma in pygame.event.get():
         
@@ -189,6 +169,8 @@ while True:
                 vetta = True
             if tapahtuma.key == pygame.K_3:
                 tiilta = True
+            if tapahtuma.key == pygame.K_4:
+                savua = True
             if tapahtuma.key == pygame.K_ESCAPE:
                 exit()
         if tapahtuma.type == pygame.KEYUP:
@@ -198,11 +180,13 @@ while True:
                 vetta = False
             if tapahtuma.key == pygame.K_3:
                 tiilta = False
+            if tapahtuma.key == pygame.K_4:
+                savua = False
         if tapahtuma.type == pygame.QUIT:
             exit()
         
-    testi = fysiikka(testi)
-
+    testi = uusi_fysiikka(testi)
+    testi = vanha_fysiikka(testi)
     if hiekkaa:
         testi[y,x] = HIEKKA
     if vetta and x+3 < WIDTH:
@@ -212,11 +196,13 @@ while True:
         testi[y,x+3] = VESI
     if tiilta:
         testi[y,x] = TIILI
+    if savua:
+        testi[y,x] = SAVU
         
     surface = pygame.surfarray.make_surface(testi.T)
     naytto.blit(surface, (0, 0))
     
-    kello.tick(60)
+    kello.tick(0)
     pygame.display.flip()
     end = time.perf_counter()
     pygame.display.set_caption(f"{kello.get_fps():.1f} fps -- {end - start:.5f} ms")
