@@ -73,16 +73,6 @@ def old_check_diagonal_down_right(array,row, blokki):
     mask = (array[row + 1][1:] == ILMA) & (array[row + 1][:-1] == blokki) & (array[row][:-1] == blokki)
     return mask
 
-def old_check_up(array,row,blokki):
-    mask = (array[row] == blokki) & (array[row-1] == ILMA)
-    return mask
-
-def old_check_diagonal_up_left(array,row,blokki):
-	pass
-
-def old_check_diagonal_up_right(array, row, blokki):
-    pass
-
 def old_check_left(array,row,blokki):
     mask = (array[row][1:] == blokki) & (array[row][:-1] == ILMA)
     return mask
@@ -91,20 +81,25 @@ def old_check_right(array,row,blokki):
     mask = (array[row][:-1] == blokki) & (array[row][1:] == ILMA)
     return mask
 
+def down(array,mask,blokki):
+    mask[1:,1:] = (array[1:,1:] == ILMA) & (array[:-1,1:] == blokki)
+    array[:-1,1:][mask[1:,1:]] = ILMA
+    array[mask] = blokki
+
+def diag_left(array,mask,blokki):
+    mask[1:,:-1] = (array[:-1,1:] == blokki) & (array[1:,:-1] == ILMA) & (array[1:,1:] != ILMA)
+    array[:-1,1:][mask[1:,:-1]] = ILMA
+    array[mask] = blokki
+
+def diag_right(array,mask,blokki):
+    mask[1:,1:] = (array[:-1,:-1] == blokki) & (array[1:,1:] == ILMA) & (array[1:,:-1] != ILMA)
+    array[:-1,:-1][mask[1:,1:]] = ILMA
+    array[mask] = blokki
+
 def hiekka_fysiikka(array,mask):
-    #up
-    mask[1:,1:] = (testi[1:,1:] == ILMA) & (testi[:-1,1:] == HIEKKA)
-    testi[:-1,1:][mask[1:,1:]] = ILMA
-    testi[mask] = HIEKKA
-    #diag_left
-    mask[1:,:-1] = (testi[:-1,1:] == HIEKKA) & (testi[1:,:-1] == ILMA) & (testi[1:,1:] != ILMA)
-    testi[:-1,1:][mask[1:,:-1]] = ILMA
-    testi[mask] = HIEKKA
-    #diag_right
-    mask[1:,1:] = (testi[:-1,:-1] == HIEKKA) & (testi[1:,1:] == ILMA) & (testi[1:,:-1] != ILMA)
-    testi[:-1,:-1][mask[1:,1:]] = ILMA
-    testi[mask] = HIEKKA
-    
+    down(array,mask,HIEKKA)
+    diag_left(array,mask,HIEKKA)
+    diag_right(array,mask,HIEKKA)
 
     return array
 
