@@ -115,10 +115,10 @@ def hiekka_fysiikka(array,mask):
 
 def vesi_fysiikka(array,mask):
     down(array,mask,VESI)
-    # diag_left(array,mask,VESI)
-    # diag_right(array,mask,VESI)
+    diag_left(array,mask,VESI)
+    diag_right(array,mask,VESI)
     left(array,mask,VESI)
-    # right(array,mask,VESI)
+    #right(array,mask,VESI)
     return array
 
 def vanha_vesi_fysiikka(array):
