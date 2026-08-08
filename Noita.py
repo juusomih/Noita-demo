@@ -96,6 +96,16 @@ def diag_right(array,mask,blokki):
     array[:-1,:-1][mask[1:,1:]] = ILMA
     array[mask] = blokki
 
+def left(array,mask,blokki):
+    mask[:-1,:-1] = (array[:-1,:-1] == ILMA) & (array[:-1,1:] == blokki) & (array[1:,1:] != ILMA) & (array[1:,:-1] != ILMA) 
+    array[:-1,1:][mask[:-1,:-1]] = ILMA
+    array[mask] = blokki
+
+def right(array,mask,blokki):
+    mask[:-1,1:] = (array[:-1,1:] == ILMA) & (array[:-1,:-1] == blokki) & (array[1:,:-1] != ILMA) & (array[1:,1:] != ILMA) 
+    array[:-1,:-1][mask[:-1,1:]] = ILMA
+    array[mask] = blokki
+
 def hiekka_fysiikka(array,mask):
     down(array,mask,HIEKKA)
     diag_left(array,mask,HIEKKA)
@@ -104,16 +114,11 @@ def hiekka_fysiikka(array,mask):
     return array
 
 def vesi_fysiikka(array,mask):
-    pass
-    #left
-    # mask[:-1,:-1] = (testi[:-1,:-1] == ILMA) & (testi[:-1,1:] == HIEKKA) & (testi[1:,1:] != ILMA) & (testi[1:,:-1] != ILMA) 
-    # testi[:-1,1:][mask[:-1,:-1]] = ILMA
-    # testi[mask] = HIEKKA
-    # #right
-    # mask[:-1,1:] = (testi[:-1,1:] == ILMA) & (testi[:-1,:-1] == HIEKKA) & (testi[1:,:-1] != ILMA) & (testi[1:,1:] != ILMA) 
-    # testi[:-1,:-1][mask[:-1,1:]] = ILMA
-    # testi[mask] = HIEKKA
+    down(array,mask,VESI)
+    diag_left(array,mask,VESI)
+    diag_right(array,mask,VESI)
 
+    return array
 def vanha_vesi_fysiikka(array):
     for row in range(array.shape[0] - 2, -1, -1):
         current_row = array[row]
@@ -193,6 +198,7 @@ while True:
             exit()
         
     testi = hiekka_fysiikka(testi,mask)
+    #testi = vesi_fysiikka(testi,mask)
     #testi = vanha_vesi_fysiikka(testi)
     if hiekkaa:
         testi[y,x] = HIEKKA
