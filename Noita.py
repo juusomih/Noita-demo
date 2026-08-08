@@ -12,14 +12,15 @@ tiilta = False
 hiekkaa = False
 vetta = False
 savua = False
-testi = np.full((HEIGHT, WIDTH),ILMA,device="cpu")
+testi = np.full((HEIGHT, WIDTH),ILMA)
+mask = np.zeros_like(testi, dtype=bool)
 kello = pygame.time.Clock()
 pygame.init()
 
 naytto = pygame.display.set_mode((WIDTH, HEIGHT))
 kello = pygame.time.Clock()
 
-def move_particle(particle, destination: str, current_row, below_row, mask):
+def old_move_particle(particle, destination: str, current_row, below_row, mask):
     if destination == "down":
         current_row[mask] = ILMA
         below_row[mask] = particle
@@ -48,9 +49,6 @@ def move_particle(particle, destination: str, current_row, below_row, mask):
     elif destination == "up_right":
         pass
 
-    
-    
-
 def spawn_particle(array, particle,y:int = 1,x:int = 1):
     pass
 	
@@ -60,84 +58,98 @@ def explosion():
 def print_partikkeli_lkm():
     hiekkalkm = np.count_nonzero(testi == HIEKKA)
     vesilkm = np.count_nonzero(testi == VESI)
-    print(f"hiekka: {hiekkalkm} vesi: {vesilkm}")
+    #print(f"hiekka: {hiekkalkm} vesi: {vesilkm}")
+    return hiekkalkm, vesilkm
 
-def check_down(array,row,blokki):
+def old_check_down(array,row,blokki):
     mask = (array[row] == blokki) & (array[row + 1] == ILMA)
     return mask
 
-def check_diagonal_down_left(array,row, blokki):
+def old_check_diagonal_down_left(array,row, blokki):
     mask = (array[row + 1][:-1] == ILMA) & (array[row + 1][1:] == blokki) & (array[row][1:] == blokki)
     return mask
 
-def check_diagonal_down_right(array,row, blokki):
+def old_check_diagonal_down_right(array,row, blokki):
     mask = (array[row + 1][1:] == ILMA) & (array[row + 1][:-1] == blokki) & (array[row][:-1] == blokki)
     return mask
 
-def check_up(array,row,blokki):
+def old_check_up(array,row,blokki):
     mask = (array[row] == blokki) & (array[row-1] == ILMA)
     return mask
 
-def check_diagonal_up_left(array,row,blokki):
+def old_check_diagonal_up_left(array,row,blokki):
 	pass
 
-def check_diagonal_up_right(array, row, blokki):
+def old_check_diagonal_up_right(array, row, blokki):
     pass
 
-def check_left(array,row,blokki):
+def old_check_left(array,row,blokki):
     mask = (array[row][1:] == blokki) & (array[row][:-1] == ILMA)
     return mask
 
-def check_right(array,row,blokki):
+def old_check_right(array,row,blokki):
     mask = (array[row][:-1] == blokki) & (array[row][1:] == ILMA)
     return mask
 
-def uusi_fysiikka(array):
-    find_below = (array[1:, :] == ILMA ) & (array[:-1, :] == HIEKKA)
-    array[1:, :][find_below] = HIEKKA
-    array[:-1, :][find_below] = ILMA
-
-    find_diag_down_left = (array[1:,:-1] == ILMA) & (array[:-1,1:] == HIEKKA)
-    array[1:,:-1][find_diag_down_left] = HIEKKA
-    array[:-1,1:][find_diag_down_left] = ILMA
-
-    find_diag_down_right = (array[1:,1:] == ILMA) & (array[:-1,:-1] == HIEKKA)
-    array[1:,1:][find_diag_down_right] = HIEKKA
-    array[:-1,:-1][find_diag_down_right] = ILMA
+def hiekka_fysiikka(array,mask):
+    #up
+    mask[1:,1:] = (testi[1:,1:] == ILMA) & (testi[:-1,1:] == HIEKKA)
+    testi[:-1,1:][mask[1:,1:]] = ILMA
+    testi[mask] = HIEKKA
+    #diag_left
+    mask[1:,:-1] = (testi[:-1,1:] == HIEKKA) & (testi[1:,:-1] == ILMA) & (testi[1:,1:] != ILMA)
+    testi[:-1,1:][mask[1:,:-1]] = ILMA
+    testi[mask] = HIEKKA
+    #diag_right
+    mask[1:,1:] = (testi[:-1,:-1] == HIEKKA) & (testi[1:,1:] == ILMA) & (testi[1:,:-1] != ILMA)
+    testi[:-1,:-1][mask[1:,1:]] = ILMA
+    testi[mask] = HIEKKA
+    
 
     return array
 
-def vanha_fysiikka(array):
+def vesi_fysiikka(array,mask):
+    pass
+    #left
+    # mask[:-1,:-1] = (testi[:-1,:-1] == ILMA) & (testi[:-1,1:] == HIEKKA) & (testi[1:,1:] != ILMA) & (testi[1:,:-1] != ILMA) 
+    # testi[:-1,1:][mask[:-1,:-1]] = ILMA
+    # testi[mask] = HIEKKA
+    # #right
+    # mask[:-1,1:] = (testi[:-1,1:] == ILMA) & (testi[:-1,:-1] == HIEKKA) & (testi[1:,:-1] != ILMA) & (testi[1:,1:] != ILMA) 
+    # testi[:-1,:-1][mask[:-1,1:]] = ILMA
+    # testi[mask] = HIEKKA
+
+def vanha_vesi_fysiikka(array):
     for row in range(array.shape[0] - 2, -1, -1):
         current_row = array[row]
         below_row = array[row + 1]
 
-        move_particle(
+        old_move_particle(
             VESI,
             "down", 
             current_row, 
             below_row, 
-            check_down(array, row, VESI)
+            old_check_down(array, row, VESI)
         )
 
-        move_particle(
+        old_move_particle(
             VESI,
             "down_left",
             current_row,
             below_row,
-            check_diagonal_down_left(array, row, VESI),
+            old_check_diagonal_down_left(array, row, VESI),
         )
 
-        move_particle(
+        old_move_particle(
             VESI,
             "down_right",
             current_row,
             below_row,
-            check_diagonal_down_right(array, row, VESI),
+            old_check_diagonal_down_right(array, row, VESI),
         )
 
-        can_moveleft = check_left(array, row, VESI)
-        can_moveright = check_right(array, row, VESI)
+        can_moveleft = old_check_left(array, row, VESI)
+        can_moveright = old_check_right(array, row, VESI)
         
         if random.random() < 0.3:
             left_mask = can_moveleft
@@ -154,7 +166,7 @@ def vanha_fysiikka(array):
 
     return array
 
-#cProfile.run("fysiikka(testi)")
+#cProfile.run("hiekka_fysiikka(testi,mask)")
 while True:
     start = time.perf_counter()
     
@@ -185,8 +197,8 @@ while True:
         if tapahtuma.type == pygame.QUIT:
             exit()
         
-    testi = uusi_fysiikka(testi)
-    testi = vanha_fysiikka(testi)
+    testi = hiekka_fysiikka(testi,mask)
+    #testi = vanha_vesi_fysiikka(testi)
     if hiekkaa:
         testi[y,x] = HIEKKA
     if vetta and x+3 < WIDTH:
@@ -205,7 +217,7 @@ while True:
     kello.tick(0)
     pygame.display.flip()
     end = time.perf_counter()
-    pygame.display.set_caption(f"{kello.get_fps():.1f} fps -- {end - start:.5f} ms")
+    pygame.display.set_caption(f"{kello.get_fps():.1f} fps -- {(end - start) * 1000 :.3f} ms -- {print_partikkeli_lkm()[0]} hiekka {print_partikkeli_lkm()[1]} vesi ")
     
 
         
