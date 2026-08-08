@@ -115,10 +115,12 @@ def hiekka_fysiikka(array,mask):
 
 def vesi_fysiikka(array,mask):
     down(array,mask,VESI)
-    diag_left(array,mask,VESI)
-    diag_right(array,mask,VESI)
-
+    # diag_left(array,mask,VESI)
+    # diag_right(array,mask,VESI)
+    left(array,mask,VESI)
+    # right(array,mask,VESI)
     return array
+
 def vanha_vesi_fysiikka(array):
     for row in range(array.shape[0] - 2, -1, -1):
         current_row = array[row]
@@ -198,7 +200,7 @@ while True:
             exit()
         
     testi = hiekka_fysiikka(testi,mask)
-    #testi = vesi_fysiikka(testi,mask)
+    testi = vesi_fysiikka(testi,mask)
     #testi = vanha_vesi_fysiikka(testi)
     if hiekkaa:
         testi[y,x] = HIEKKA
