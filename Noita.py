@@ -7,13 +7,14 @@ HIEKKA = 249
 SAVU = 50
 VESI = 2
 
-
+flip = True
 tiilta = False
 hiekkaa = False
 vetta = False
 savua = False
 testi = np.full((HEIGHT, WIDTH),ILMA)
 mask = np.zeros_like(testi, dtype=bool)
+
 kello = pygame.time.Clock()
 pygame.init()
 
@@ -58,8 +59,9 @@ def explosion():
 def print_partikkeli_lkm():
     hiekkalkm = np.count_nonzero(testi == HIEKKA)
     vesilkm = np.count_nonzero(testi == VESI)
+    savulkm = np.count_nonzero(testi == SAVU)
     #print(f"hiekka: {hiekkalkm} vesi: {vesilkm}")
-    return hiekkalkm, vesilkm
+    return hiekkalkm, vesilkm, savulkm
 
 def old_check_down(array,row,blokki):
     mask = (array[row] == blokki) & (array[row + 1] == ILMA)
@@ -80,6 +82,11 @@ def old_check_left(array,row,blokki):
 def old_check_right(array,row,blokki):
     mask = (array[row][:-1] == blokki) & (array[row][1:] == ILMA)
     return mask
+
+def up(array,mask,blokki):
+    mask[:-1,1:] = (array[:-1,1:] == ILMA) & (array[1:,1:] == blokki)
+    array[1:,1:][mask[:-1,1:]] = ILMA
+    array[mask] = blokki
 
 def down(array,mask,blokki):
     mask[1:,1:] = (array[1:,1:] == ILMA) & (array[:-1,1:] == blokki)
@@ -119,6 +126,10 @@ def vesi_fysiikka(array,mask):
     diag_right(array,mask,VESI)
     left(array,mask,VESI)
     #right(array,mask,VESI)
+    return array
+
+def savu_fysiikka(array,mask):
+    up(array,mask,SAVU)
     return array
 
 def vanha_vesi_fysiikka(array):
@@ -201,6 +212,7 @@ while True:
         
     testi = hiekka_fysiikka(testi,mask)
     testi = vesi_fysiikka(testi,mask)
+    #testi = savu_fysiikka(testi,mask)
     #testi = vanha_vesi_fysiikka(testi)
     if hiekkaa:
         testi[y,x] = HIEKKA
