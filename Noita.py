@@ -1,6 +1,6 @@
 import numpy as np, pygame, random,cProfile,time
 
-WIDTH, HEIGHT = 640, 480
+WIDTH, HEIGHT = 1280, 800
 ILMA = 0
 TIILI = 100
 HIEKKA = 249
@@ -21,18 +21,18 @@ pygame.init()
 naytto = pygame.display.set_mode((WIDTH, HEIGHT))
 kello = pygame.time.Clock()
 
-def old_move_particle(particle, destination: str, current_row, below_row, mask):
+def old_move_particle(particle, destination: str, current_row, below_row, maski):
     if destination == "down":
-        current_row[mask] = ILMA
-        below_row[mask] = particle
+        current_row[maski] = ILMA
+        below_row[maski] = particle
 
     elif destination == "down_left":
-        current_row[1:][mask] = ILMA
-        below_row[:-1][mask] = particle
+        current_row[1:][maski] = ILMA
+        below_row[:-1][maski] = particle
 
     elif destination == "down_right":
-        current_row[:-1][mask] = ILMA
-        below_row[1:][mask] = particle
+        current_row[:-1][maski] = ILMA
+        below_row[1:][maski] = particle
 
     elif destination == "left":
         pass
@@ -41,8 +41,8 @@ def old_move_particle(particle, destination: str, current_row, below_row, mask):
         pass
 
     elif destination == "up":
-        current_row[mask] = particle
-        below_row[mask] = ILMA
+        current_row[maski] = particle
+        below_row[maski] = ILMA
 
     elif destination == "up_left":
         pass
@@ -129,16 +129,18 @@ def right(array,mask,blokki):
     array[mask] = blokki
 
 def hiekka_fysiikka(array,mask):
+
     down(array,mask,HIEKKA)
-    
     diag_left(array,mask,HIEKKA)
     diag_right(array,mask,HIEKKA)
     swap_up_down(array,mask,HIEKKA,VESI)
     swap_diag_left(array,mask,HIEKKA,VESI)
     swap_diag_right(array,mask,HIEKKA,VESI)
+
     return array
 
 def vesi_fysiikka(array,mask):
+
     down(array,mask,VESI)
     diag_left(array,mask,VESI)
     diag_right(array,mask,VESI)
@@ -146,6 +148,7 @@ def vesi_fysiikka(array,mask):
         left(array,mask,VESI)
     else:
         right(array,mask,VESI)
+
     return array
 
 def savu_fysiikka(array,mask):
@@ -157,6 +160,30 @@ def vanha_vesi_fysiikka(array):
     for row in range(array.shape[0] - 2, -1, -1):
         current_row = array[row]
         below_row = array[row + 1]
+
+        old_move_particle(
+            HIEKKA,
+            "down", 
+            current_row, 
+            below_row, 
+            old_check_down(array, row, HIEKKA)
+        )
+        
+        old_move_particle(
+            HIEKKA,
+            "down_left",
+            current_row,
+            below_row,
+            old_check_diagonal_down_left(array, row, HIEKKA),
+        )
+        
+        old_move_particle(
+            HIEKKA,
+            "down_right",
+            current_row,
+            below_row,
+            old_check_diagonal_down_right(array, row, HIEKKA),
+        )
 
         old_move_particle(
             VESI,
@@ -252,10 +279,11 @@ while True:
         
     surface = pygame.surfarray.make_surface(testi.T)
     naytto.blit(surface, (0, 0))
+    pygame.display.flip()
     end = time.perf_counter()
     kello.tick(60)
-    pygame.display.flip()
-    pygame.display.set_caption(f"{kello.get_fps():.1f} fps -- {(end - start) * 1000 :.3f} ms -- {print_partikkeli_lkm()[0]} hiekka {print_partikkeli_lkm()[1]} vesi ")
+    
+    pygame.display.set_caption(f"Total Pixels: {HEIGHT*WIDTH} {kello.get_fps():.1f} fps -- {(end - start) * 1000 :.2f} ms -- {print_partikkeli_lkm()[0]} sand pixels {print_partikkeli_lkm()[1]} water pixels ")
     
 
         
