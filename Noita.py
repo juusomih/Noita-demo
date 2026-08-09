@@ -146,7 +146,11 @@ def vesi_fysiikka(array,mask):
     diag_right(array,mask,VESI)
     if random.random() < 0.4:
         left(array,mask,VESI)
+        left(array,mask,VESI)
+        left(array,mask,VESI)
     else:
+        right(array,mask,VESI)
+        right(array,mask,VESI)
         right(array,mask,VESI)
 
     return array
