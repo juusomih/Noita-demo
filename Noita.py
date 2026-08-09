@@ -83,11 +83,21 @@ def old_check_right(array,row,blokki):
     mask = (array[row][:-1] == blokki) & (array[row][1:] == ILMA)
     return mask
 
-def swap(array,mask,ylablokki,alablokki):
+def swap_up_down(array,mask,ylablokki,alablokki):
     mask[1:,1:] = (array[1:,1:] == alablokki) & (array[:-1,1:] == ylablokki)
     array[:-1,1:][mask[1:,1:]] = alablokki
     array[mask] = ylablokki
 
+def swap_diag_left(array,mask,ylablokki,alablokki):
+    mask[1:,:-1] = (array[:-1,1:] == ylablokki) & (array[1:,:-1] == ILMA) & (array[1:,1:] != ILMA)
+    array[:-1,1:][mask[1:,:-1]] = alablokki
+    array[mask] = ylablokki
+
+def swap_diag_right(array,mask,ylablokki,alablokki):
+    mask[1:,1:] = (array[:-1,:-1] == ylablokki) & (array[1:,1:] == ILMA) & (array[1:,:-1] != ILMA)
+    array[:-1,:-1][mask[1:,1:]] = alablokki
+    array[mask] = ylablokki
+    
 def up(array,mask,blokki):
     mask[:-1,1:] = (array[:-1,1:] == ILMA) & (array[1:,1:] == blokki)
     array[1:,1:][mask[:-1,1:]] = ILMA
@@ -120,7 +130,9 @@ def right(array,mask,blokki):
 
 def hiekka_fysiikka(array,mask):
     down(array,mask,HIEKKA)
-    swap(array,mask,HIEKKA,VESI)
+    swap_up_down(array,mask,HIEKKA,VESI)
+    swap_diag_left(array,mask,HIEKKA,VESI)
+    swap_diag_right(array,mask,HIEKKA,VESI)
     diag_left(array,mask,HIEKKA)
     diag_right(array,mask,HIEKKA)
 
@@ -130,12 +142,13 @@ def vesi_fysiikka(array,mask):
     down(array,mask,VESI)
     diag_left(array,mask,VESI)
     diag_right(array,mask,VESI)
-    left(array,mask,VESI)
-    #right(array,mask,VESI)
+    #left(array,mask,VESI)
+    right(array,mask,VESI)
     return array
 
 def savu_fysiikka(array,mask):
     up(array,mask,SAVU)
+
     return array
 
 def vanha_vesi_fysiikka(array):
@@ -227,17 +240,19 @@ while True:
         testi[y,x+1] = VESI
         testi[y,x+2] = VESI
         testi[y,x+3] = VESI
-    if tiilta:
+    if tiilta and x+3 < WIDTH:
         testi[y,x] = TIILI
+        testi[y,x+1] = TIILI
+        testi[y,x+2] = TIILI
+        testi[y,x+3] = TIILI
     if savua:
         testi[y,x] = SAVU
         
     surface = pygame.surfarray.make_surface(testi.T)
     naytto.blit(surface, (0, 0))
-    
-    kello.tick(0)
-    pygame.display.flip()
     end = time.perf_counter()
+    kello.tick(60)
+    pygame.display.flip()
     pygame.display.set_caption(f"{kello.get_fps():.1f} fps -- {(end - start) * 1000 :.3f} ms -- {print_partikkeli_lkm()[0]} hiekka {print_partikkeli_lkm()[1]} vesi ")
     
 
