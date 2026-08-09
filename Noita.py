@@ -130,20 +130,22 @@ def right(array,mask,blokki):
 
 def hiekka_fysiikka(array,mask):
     down(array,mask,HIEKKA)
+    
+    diag_left(array,mask,HIEKKA)
+    diag_right(array,mask,HIEKKA)
     swap_up_down(array,mask,HIEKKA,VESI)
     swap_diag_left(array,mask,HIEKKA,VESI)
     swap_diag_right(array,mask,HIEKKA,VESI)
-    diag_left(array,mask,HIEKKA)
-    diag_right(array,mask,HIEKKA)
-
     return array
 
 def vesi_fysiikka(array,mask):
     down(array,mask,VESI)
     diag_left(array,mask,VESI)
     diag_right(array,mask,VESI)
-    #left(array,mask,VESI)
-    right(array,mask,VESI)
+    if random.random() < 0.4:
+        left(array,mask,VESI)
+    else:
+        right(array,mask,VESI)
     return array
 
 def savu_fysiikka(array,mask):
