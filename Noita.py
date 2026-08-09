@@ -83,6 +83,11 @@ def old_check_right(array,row,blokki):
     mask = (array[row][:-1] == blokki) & (array[row][1:] == ILMA)
     return mask
 
+def swap(array,mask,ylablokki,alablokki):
+    mask[1:,1:] = (array[1:,1:] == alablokki) & (array[:-1,1:] == ylablokki)
+    array[:-1,1:][mask[1:,1:]] = alablokki
+    array[mask] = ylablokki
+
 def up(array,mask,blokki):
     mask[:-1,1:] = (array[:-1,1:] == ILMA) & (array[1:,1:] == blokki)
     array[1:,1:][mask[:-1,1:]] = ILMA
@@ -115,6 +120,7 @@ def right(array,mask,blokki):
 
 def hiekka_fysiikka(array,mask):
     down(array,mask,HIEKKA)
+    swap(array,mask,HIEKKA,VESI)
     diag_left(array,mask,HIEKKA)
     diag_right(array,mask,HIEKKA)
 
