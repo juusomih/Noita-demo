@@ -89,12 +89,12 @@ def swap_up_down(array,mask,ylablokki,alablokki):
     array[mask] = ylablokki
 
 def swap_diag_left(array,mask,ylablokki,alablokki):
-    mask[1:,:-1] = (array[:-1,1:] == ylablokki) & (array[1:,:-1] == ILMA) & (array[1:,1:] != ILMA)
+    mask[1:,:-1] = (array[:-1,1:] == ylablokki) & (array[1:,:-1] == alablokki) & (array[1:,1:] != ILMA)
     array[:-1,1:][mask[1:,:-1]] = alablokki
     array[mask] = ylablokki
 
 def swap_diag_right(array,mask,ylablokki,alablokki):
-    mask[1:,1:] = (array[:-1,:-1] == ylablokki) & (array[1:,1:] == ILMA) & (array[1:,:-1] != ILMA)
+    mask[1:,1:] = (array[:-1,:-1] == ylablokki) & (array[1:,1:] == alablokki) & (array[1:,:-1] != ILMA)
     array[:-1,:-1][mask[1:,1:]] = alablokki
     array[mask] = ylablokki
     
