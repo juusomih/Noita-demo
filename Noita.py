@@ -50,13 +50,15 @@ def old_move_particle(particle, destination: str, current_row, below_row, maski)
     elif destination == "up_right":
         pass
 
-def spawn_particle(array, particle,y:int = 1,x:int = 1):
-    pass
+def spawn_particle(array, particle,y:int = 1,x:int = 1,width = 1):
+    for i in range(width):
+        if x+i < array.shape[1]:
+            array[y,x+i] = particle
 	
 def explosion():
     pass
 
-def print_partikkeli_lkm():
+def get_partikkeli_lkm():
     hiekkalkm = np.count_nonzero(testi == HIEKKA)
     vesilkm = np.count_nonzero(testi == VESI)
     savulkm = np.count_nonzero(testi == SAVU)
@@ -129,7 +131,7 @@ def right(array,mask,blokki):
     array[mask] = blokki
 
 def hiekka_fysiikka(array,mask):
-
+    down(array,mask,HIEKKA)
     down(array,mask,HIEKKA)
     diag_left(array,mask,HIEKKA)
     diag_right(array,mask,HIEKKA)
@@ -142,14 +144,14 @@ def hiekka_fysiikka(array,mask):
 def vesi_fysiikka(array,mask):
 
     down(array,mask,VESI)
+    down(array,mask,VESI)
     diag_left(array,mask,VESI)
     diag_right(array,mask,VESI)
+   
     if random.random() < 0.4:
         left(array,mask,VESI)
         left(array,mask,VESI)
-        left(array,mask,VESI)
     else:
-        right(array,mask,VESI)
         right(array,mask,VESI)
         right(array,mask,VESI)
 
@@ -235,7 +237,7 @@ def vanha_vesi_fysiikka(array):
 while True:
     start = time.perf_counter()
     
-    print_partikkeli_lkm()
+    get_partikkeli_lkm()
     x, y = pygame.mouse.get_pos()
     for tapahtuma in pygame.event.get():
         
@@ -267,17 +269,11 @@ while True:
     #testi = savu_fysiikka(testi,mask)
     #testi = vanha_vesi_fysiikka(testi)
     if hiekkaa:
-        testi[y,x] = HIEKKA
+        spawn_particle(testi,HIEKKA,y,x,4)
     if vetta and x+3 < WIDTH:
-        testi[y,x] = VESI
-        testi[y,x+1] = VESI
-        testi[y,x+2] = VESI
-        testi[y,x+3] = VESI
+        spawn_particle(testi,VESI,y,x,4)
     if tiilta and x+3 < WIDTH:
-        testi[y,x] = TIILI
-        testi[y,x+1] = TIILI
-        testi[y,x+2] = TIILI
-        testi[y,x+3] = TIILI
+        spawn_particle(testi,TIILI,y,x,4)
     if savua:
         testi[y,x] = SAVU
         
@@ -287,7 +283,7 @@ while True:
     end = time.perf_counter()
     kello.tick(60)
     
-    pygame.display.set_caption(f"Total Pixels: {HEIGHT*WIDTH} {kello.get_fps():.1f} fps -- {(end - start) * 1000 :.2f} ms -- {print_partikkeli_lkm()[0]} sand pixels {print_partikkeli_lkm()[1]} water pixels ")
+    pygame.display.set_caption(f"Total Pixels: {HEIGHT*WIDTH} {kello.get_fps():.1f} fps -- {(end - start) * 1000 :.2f} ms -- {get_partikkeli_lkm()[0]} sand pixels {get_partikkeli_lkm()[1]} water pixels ")
     
 
         
