@@ -21,35 +21,137 @@ pygame.init()
 naytto = pygame.display.set_mode((WIDTH, HEIGHT))
 kello = pygame.time.Clock()
 
-def old_move_particle(particle, destination: str, current_row, below_row, maski):
-    if destination == "down":
-        current_row[maski] = ILMA
-        below_row[maski] = particle
+class OldPhysics:
+    WIDTH, HEIGHT = 1280, 800
+    ILMA = 0
+    TIILI = 100
+    HIEKKA = 249
+    SAVU = 50
+    VESI = 2
+    def __init__(self,array):
+        self.array = array
+        
 
-    elif destination == "down_left":
-        current_row[1:][maski] = ILMA
-        below_row[:-1][maski] = particle
+    def vanha_vesi_fysiikka(self):
+        for row in range(self.array.shape[0] - 2, -1, -1):
+            current_row = self.array[row]
+            below_row = self.array[row + 1]
 
-    elif destination == "down_right":
-        current_row[:-1][maski] = ILMA
-        below_row[1:][maski] = particle
+            self.old_move_particle(
+                HIEKKA,
+                "down", 
+                current_row, 
+                below_row, 
+                self.old_check_down(row, HIEKKA)
+            )
+            
+            self.old_move_particle(
+                HIEKKA,
+                "down_left",
+                current_row,
+                below_row,
+                self.old_check_diagonal_down_left(row, HIEKKA),
+            )
+            
+            self.old_move_particle(
+                HIEKKA,
+                "down_right",
+                current_row,
+                below_row,
+                self.old_check_diagonal_down_right(row, HIEKKA),
+            )
 
-    elif destination == "left":
-        pass
+            self.old_move_particle(
+                VESI,
+                "down", 
+                current_row, 
+                below_row, 
+                self.old_check_down(row, VESI)
+            )
 
-    elif destination == "right":
-        pass
+            self.old_move_particle(
+                VESI,
+                "down_left",
+                current_row,
+                below_row,
+                self.old_check_diagonal_down_left(row, VESI),
+            )
 
-    elif destination == "up":
-        current_row[maski] = particle
-        below_row[maski] = ILMA
+            self.old_move_particle(
+                VESI,
+                "down_right",
+                current_row,
+                below_row,
+                self.old_check_diagonal_down_right(row, VESI),
+            )
 
-    elif destination == "up_left":
-        pass
+            can_moveleft = self.old_check_left(row, VESI)
+            can_moveright = self.old_check_right( row, VESI)
+            
+            if random.random() < 0.3:
+                left_mask = can_moveleft
+                right_mask = can_moveright & ~can_moveleft
 
-    elif destination == "up_right":
-        pass
+                current_row[1:][left_mask] = ILMA
+                current_row[:-1][left_mask] = VESI
+            else:
+                right_mask = can_moveright
+                left_mask = can_moveleft & ~can_moveright
 
+                current_row[:-1][right_mask] = ILMA
+                current_row[1:][right_mask] = VESI
+
+        return self.array
+    
+    def old_move_particle(self, particle, destination: str, current_row, below_row, maski):
+        if destination == "down":
+            current_row[maski] = ILMA
+            below_row[maski] = particle
+
+        elif destination == "down_left":
+            current_row[1:][maski] = ILMA
+            below_row[:-1][maski] = particle
+
+        elif destination == "down_right":
+            current_row[:-1][maski] = ILMA
+            below_row[1:][maski] = particle
+
+        elif destination == "left":
+            pass
+
+        elif destination == "right":
+            pass
+
+        elif destination == "up":
+            current_row[maski] = particle
+            below_row[maski] = ILMA
+
+        elif destination == "up_left":
+            pass
+
+        elif destination == "up_right":
+            pass
+
+    def old_check_down(self,row,blokki):
+        mask = (self.array[row] == blokki) & (self.array[row + 1] == ILMA)
+        return mask
+
+    def old_check_diagonal_down_left(self,row, blokki):
+        mask = (self.array[row + 1][:-1] == ILMA) & (self.array[row + 1][1:] == blokki) & (self.array[row][1:] == blokki)
+        return mask
+
+    def old_check_diagonal_down_right(self,row, blokki):
+        mask = (self.array[row + 1][1:] == ILMA) & (self.array[row + 1][:-1] == blokki) & (self.array[row][:-1] == blokki)
+        return mask
+
+    def old_check_left(self,row,blokki):
+        mask = (self.array[row][1:] == blokki) & (self.array[row][:-1] == ILMA)
+        return mask
+
+    def old_check_right(self,row,blokki):
+        mask = (self.array[row][:-1] == blokki) & (self.array[row][1:] == ILMA)
+        return mask
+    
 def spawn_particle(array, particle,y:int = 1,x:int = 1,width = 1):
     for i in range(width):
         if x+i < array.shape[1]:
@@ -65,25 +167,7 @@ def get_partikkeli_lkm():
     #print(f"hiekka: {hiekkalkm} vesi: {vesilkm}")
     return hiekkalkm, vesilkm, savulkm
 
-def old_check_down(array,row,blokki):
-    mask = (array[row] == blokki) & (array[row + 1] == ILMA)
-    return mask
 
-def old_check_diagonal_down_left(array,row, blokki):
-    mask = (array[row + 1][:-1] == ILMA) & (array[row + 1][1:] == blokki) & (array[row][1:] == blokki)
-    return mask
-
-def old_check_diagonal_down_right(array,row, blokki):
-    mask = (array[row + 1][1:] == ILMA) & (array[row + 1][:-1] == blokki) & (array[row][:-1] == blokki)
-    return mask
-
-def old_check_left(array,row,blokki):
-    mask = (array[row][1:] == blokki) & (array[row][:-1] == ILMA)
-    return mask
-
-def old_check_right(array,row,blokki):
-    mask = (array[row][:-1] == blokki) & (array[row][1:] == ILMA)
-    return mask
 
 def swap_up_down(array,mask,ylablokki,alablokki):
     mask[1:,1:] = (array[1:,1:] == alablokki) & (array[:-1,1:] == ylablokki)
@@ -159,77 +243,6 @@ def vesi_fysiikka(array,mask):
 
 def savu_fysiikka(array,mask):
     up(array,mask,SAVU)
-
-    return array
-
-def vanha_vesi_fysiikka(array):
-    for row in range(array.shape[0] - 2, -1, -1):
-        current_row = array[row]
-        below_row = array[row + 1]
-
-        old_move_particle(
-            HIEKKA,
-            "down", 
-            current_row, 
-            below_row, 
-            old_check_down(array, row, HIEKKA)
-        )
-        
-        old_move_particle(
-            HIEKKA,
-            "down_left",
-            current_row,
-            below_row,
-            old_check_diagonal_down_left(array, row, HIEKKA),
-        )
-        
-        old_move_particle(
-            HIEKKA,
-            "down_right",
-            current_row,
-            below_row,
-            old_check_diagonal_down_right(array, row, HIEKKA),
-        )
-
-        old_move_particle(
-            VESI,
-            "down", 
-            current_row, 
-            below_row, 
-            old_check_down(array, row, VESI)
-        )
-
-        old_move_particle(
-            VESI,
-            "down_left",
-            current_row,
-            below_row,
-            old_check_diagonal_down_left(array, row, VESI),
-        )
-
-        old_move_particle(
-            VESI,
-            "down_right",
-            current_row,
-            below_row,
-            old_check_diagonal_down_right(array, row, VESI),
-        )
-
-        can_moveleft = old_check_left(array, row, VESI)
-        can_moveright = old_check_right(array, row, VESI)
-        
-        if random.random() < 0.3:
-            left_mask = can_moveleft
-            right_mask = can_moveright & ~can_moveleft
-
-            current_row[1:][left_mask] = ILMA
-            current_row[:-1][left_mask] = VESI
-        else:
-            right_mask = can_moveright
-            left_mask = can_moveleft & ~can_moveright
-
-            current_row[:-1][right_mask] = ILMA
-            current_row[1:][right_mask] = VESI
 
     return array
 
